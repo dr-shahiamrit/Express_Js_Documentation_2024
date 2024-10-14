@@ -1,0 +1,56 @@
+'use strict'
+
+var express = require('express')
+var path = require('path');
+
+var app = express()
+
+// Register ejs as .html. If we did
+// not call this, we would need to
+// name our views foo.ejs instead
+// is simply a function that engines
+// use to hook into the Express View
+// system by default, so if we want
+// to change 'foo.ejs' to 'foo.html'
+// we simply pass _any__ function, in this
+// case 'ejs.__express'.
+
+app.engine('.html', require('ejs').__express);
+
+
+// Optional since express default to CWD/views
+
+app.set('views', path.join(__dirname, 'views'))
+
+// Path to our public dictory
+app.use(express.static(path.join(__dirname, 'public')))
+
+
+// Without this you would need to
+// supply the extension to res.render()
+// ex: res.render('user.html).
+
+app.set('view engine', 'html')
+
+// Dummy users
+var users = [
+    {name: 'tobi', email: 'tobi@learnboost.com'},
+    {name: 'loki', email: 'loki@learnboost.com'},
+    {name: 'jane', email: 'jane@learnboost.com'}
+];
+
+
+app.get('/', function(req, res) {
+    res.render('users', {
+        users: users,
+        title: "EJS example",
+        header: "Some users"
+    });
+})
+
+/* istanbul ignore next */
+if(!module.parent) {
+    app.listen(3000, ()=> {
+        console.log('Express server started on port 3000')
+    })
+}
